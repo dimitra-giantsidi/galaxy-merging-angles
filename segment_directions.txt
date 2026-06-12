@@ -7,7 +7,7 @@ we should mess with:
 segmenting:
 > astsegment galaxy_name.fits --hdu=0 --detection=galaxy_name_mask.fits --dhdu=1 --std=1 --clumpsnthresh=3.0
 we should mess with:
-  - hud (same as as above)
+  - hdu (same as as above)
   - dhdu
   - std
   - clumpsnthresh
