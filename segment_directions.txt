@@ -1,0 +1,13 @@
+creating the mask:
+> astarithmetic rogue_5_data.fits --hdu=0 3 gt --output=rogue_5_mask.fits
+we should mess with:
+  - hdu
+  - "3"
+
+segmenting:
+> astsegment rogue_5_data.fits --hdu=0 --detection=rogue_5_mask.fits --dhdu=1 --std=1 --clumpsnthresh=3.0
+we should mess with:
+  - hud (same as as above)
+  - dhdu
+  - std
+  - clumpsnthresh
