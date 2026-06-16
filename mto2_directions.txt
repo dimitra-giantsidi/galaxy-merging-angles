@@ -2,3 +2,4 @@ Storm 2 command:
 python mto2.py /home/otteleno/MAP/matched_filter_plots/rogue_5_data_hd.fits --move_factor 1 --s_sigma 0 --skip_reduction
 
 Rogue 5 command:
+python mto2.py /home/otteleno/MAP/matched_filter_plots/rogue_5_data_hd.fits --move_factor 1 --s_sigma 0 --skip_reduction
