@@ -34,14 +34,13 @@
   
   ~ If the project already exists in your computer (has been cloned)
     - go in your project directory (in the terminal)
-      + If you have never pulled before
-        * run the following commands
-          > git init
-          > git pull origin [insert branch name]
-        * log into your github account using your classic token as your password
-      + If you have pulled before
-         * run the following commands
+      + If you have never pulled before run the following commands
+        > git init
+        > git pull origin [insert branch name]
+        + log into your github account using your classic token as your password
+      + If you have pulled before run the following commands
            > git checkout [insert branch name]
            > git branch -u origin/[insert branch name]
              ! the -u flag allows you to only write "git pull" in the future. if you want to change your default branch, run this line
                > git branch --set-upstream-to=origin/[insert branch name]
+               and start from 
