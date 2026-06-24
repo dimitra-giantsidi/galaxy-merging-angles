@@ -14,7 +14,8 @@
       > git remote add origin [insert https link]
     > git checkout -b [insert branch name] (can be a non-existing branch too)
     > git push -u origin [insert branch name]
-          ! the -u flag allows you to only write "git pull" in the future
+          ! the -u flag allows you to only write "git pull" in the future. if you want to change the default branch, start from
+            "git checkout -b [insert branch name]
    ~ log into github using your classic token as your password
    ~ from now on, every time you push start from "git add ."
 
@@ -36,10 +37,11 @@
       + If you have never pulled before
         * run the following commands
           > git init
-          > git pull origin [insert desired branch name]
+          > git pull origin [insert branch name]
         * log into your github account using your classic token as your password
       + If you have pulled before
          * run the following commands
-           > git checkout [insert desired branch name]
-           > git branch -u origin/[insert desired branch name]
-             ! the -u flag allows you to only write "git pull" in the future
+           > git checkout [insert branch name]
+           > git branch -u origin/[insert branch name]
+             ! the -u flag allows you to only write "git pull" in the future. if you want to change your default branch, run this line
+               > git branch --set-upstream-to=origin/[insert branch name]
