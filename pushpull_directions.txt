@@ -10,10 +10,10 @@
     > git init
     > git add .
     > git commit -m "[insert your message]"
-  ~ If it's your first time pushing/pulling, run the following line too
-    > git remote add origin [insert https link]
-        > git checkout -b [insert new branch name]
-        > git push -u origin [insert new branch name]
+  ~ If it's your first time pushing/pulling, run the next line too
+      > git remote add origin [insert https link]
+    > git checkout -b [insert branch name] (can be a non-existing branch too)
+    > git push -u origin [insert branch name]
           ! the -u flag allows you to only write "git pull" in the future
    ~ log into github using your classic token as your password
    ~ from now on, every time you push start from "git add ."
