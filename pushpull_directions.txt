@@ -12,7 +12,6 @@
     > git commit -m "[insert your message]"
   ~ If it's your first time pushing/pulling, run the following line too
     > git remote add origin [insert https link]
-      + If pushing to a new branch
         > git checkout -b [insert new branch name]
         > git push -u origin [insert new branch name]
           ! the -u flag allows you to only write "git pull" in the future
