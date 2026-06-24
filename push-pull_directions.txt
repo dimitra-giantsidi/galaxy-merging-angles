@@ -1,0 +1,49 @@
+1) Pushing
+
+  ~ enter the directory you want to push ("MAP")
+  ~ create a file named exactly ".gitignore" in your root directory (the one you're pushing)
+    (the file might not appear when you open your directory through your folders, but it's there)
+  ~ open the file through your terminal by typping "open .gitignore"
+  ~ on each line, write the file/folder names/paths that are larger than 50MB. github does not allow us to upload files larger than that.
+  ~ save the file and close it
+  ~ run the following commands
+    > git init
+    > git add .
+    > git commit -m "[insert your message]"
+    > git remote add origin [insert https link]
+      + If pushing to a new branch
+        > git checkout -b [insert new branch name]
+        > git push -u origin [insert new branch name]
+          ! the -u flag allows you to only write "git pull" in the future
+      + If pushing to an existing branch
+        > git checkout [insert existing branch name]
+        > git push -u origin [insert existing branch name]
+          ! the -u flag allows you to only write "git pull" in the future
+   ~ you will be asked to log into github. for your password insert the "classic token" we issued with Charlotte
+   ~ from now on, every time you push start from "git add ."
+
+! if you need to put new files/directories in the .gitignore file, run the command "git rm -r --cached ." and then
+  start from "git add ." to push
+
+! You can can check which files will be pushed with the command "git status"
+
+2) Pulling
+
+  ~ If the project does not already exist in your computer (hasn't been cloned)
+    - go into your home directory (one step before MAP)
+    - type the command "git clone -b [insert desired branch name] [insert https link]"
+    - log into your github account using your classic token, not your regular password
+    - optional: rename the project with the command "mv Mock-Observations-of-Dwarf-Mergers-at-Different-Angles MAP"
+  
+  ~ If the project already exists in your computer (has been cloned)
+    - go in your project directory (in the terminal)
+      + If you have never pulled before
+        * run the following commands
+          > git init
+          > git pull origin [insert desired branch name]
+        * log into your github account using your classic token, not your regular password
+      + If you have pulled before
+         * run the following commands
+           > git checkout [insert desired branch name]
+           > git branch -u origin/[insert desired branch name]
+             ! the -u flag allows you to only write "git pull" in the future
