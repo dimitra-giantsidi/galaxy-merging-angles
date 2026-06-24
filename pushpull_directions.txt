@@ -15,11 +15,7 @@
         > git checkout -b [insert new branch name]
         > git push -u origin [insert new branch name]
           ! the -u flag allows you to only write "git pull" in the future
-      + If pushing to an existing branch
-        > git checkout [insert existing branch name]
-        > git push -u origin [insert existing branch name]
-          ! the -u flag allows you to only write "git pull" in the future
-   ~ you will be asked to log into github. for your password insert the "classic token" we issued with Charlotte
+   ~ log into github using your classic token as your password
    ~ from now on, every time you push start from "git add ."
 
 ! if you need to put new files/directories in the .gitignore file, run the command "git rm -r --cached ." and then
@@ -41,7 +37,7 @@
         * run the following commands
           > git init
           > git pull origin [insert desired branch name]
-        * log into your github account using your classic token, not your regular password
+        * log into your github account using your classic token as your password
       + If you have pulled before
          * run the following commands
            > git checkout [insert desired branch name]
