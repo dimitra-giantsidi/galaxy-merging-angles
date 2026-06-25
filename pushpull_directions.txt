@@ -9,6 +9,7 @@
   ~ run the following commands
     > git init
     > git add .
+    ! You can can check which files will be pushed with the command "git status"
     > git commit -m "[insert your message]"
   ~ If it's your first time pushing/pulling, run the next line too
       > git remote add origin [insert https link]
@@ -21,8 +22,6 @@
 
 ! if you need to put new files/directories in the .gitignore file, run the command "git rm -r --cached ." and then
   start from "git add ." to push
-
-! You can can check which files will be pushed with the command "git status"
 
 2) Pulling
 
