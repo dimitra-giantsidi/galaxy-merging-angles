@@ -44,3 +44,8 @@
              ! the -u flag allows you to only write "git pull" in the future. if you want to change your default branch, run this line
                > git branch --set-upstream-to=origin/[insert branch name]
                and start from 
+
+3) Large files that can't be uploaded on github
+
+  ~ Log into the hpc terminal and run the command "scp [your own username]@[computer name].math.grinnell.edu:/[file path] [target]
+    - If you want to copy a whole file, add the "-r" flag before after "scp"
