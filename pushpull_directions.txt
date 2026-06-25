@@ -49,3 +49,4 @@
 
   ~ Log into the hpc terminal and run the command "scp [your own username]@[computer name].math.grinnell.edu:/[file path] [target]
     - If you want to copy a whole file, add the "-r" flag before after "scp"
+    - If you want to copy a link file like romulus_zooms...
