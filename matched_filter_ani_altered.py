@@ -168,7 +168,7 @@ def mk_norm_objcmd_gd(field, sourcefile, rmaglim = 26.0, plot=False):
     
     return stars
   
-def matched_filter_ani(my_save_path, plotdir, field, catalog, signal_file, rmaglim=26.0, plot=False, \
+def matched_filter_ani(objcmd, backcmd, my_save_path, plotdir, field, catalog, rmaglim=26.0, plot=False, \
                     RAkey = 'c1', DECkey = 'c2', gmagkey = 'gmag', \
                     # egmagkey = 'err_gmag', 
                     rmagkey = 'rmag', \
@@ -179,12 +179,7 @@ def matched_filter_ani(my_save_path, plotdir, field, catalog, signal_file, rmagl
     pixelsize=pix#/60.0 #in arcmin
     # pixelsize = pixelsize # in kpc now
 
-    if plot:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim,plot=True)   
-        backcmd = mk_norm_backcmd(field, catalog,rmaglim=rmaglim,plot=True,pix=pix)
-    else:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim)
-        backcmd = mk_norm_backcmd(field, catalog, rmaglim=rmaglim,pix=pix)
+
 
     yo = (backcmd < 1.0e-7) #Bad indices?
     backcmd[yo] = numpy.mean(backcmd)/10.0

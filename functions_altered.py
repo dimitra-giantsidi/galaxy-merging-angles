@@ -394,20 +394,15 @@ def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgele
     vdwarfcat = vaex.open(dwarfcatpath)
     dwarfcat = pd.DataFrame(vdwarfcat,columns=vdwarfcat.column_names)
     
-    # adding errors to magnitudes - see how the cmd smears out at the dim magnitudes?
+    # # adding errors to magnitudes - see how the cmd smears out at the dim magnitudes?
     errModel = LsstErrorModel(nYrObs=year)
     errModel = LsstErrorModel(renameDict={ "u": "lsst_u", "g": "lsst_g", "r": "lsst_r", "i": "lsst_i", "z": "lsst_z", "y": "lsst_y"}) 
     dframe_w_errors = errModel(dwarfcat)
 
-    fig = plt.figure(figsize=(6,8))
-    plt.scatter(dframe_w_errors.lsst_g - dframe_w_errors.lsst_r, dframe_w_errors.lsst_r,alpha=1,s=0.1,c=dframe_w_errors.age)
-    plt.gca().invert_yaxis()
-    plt.show()
-
-    # these are xyz positions relative to observer
+    # # these are xyz positions relative to observer
     c1dwarf = dframe_w_errors[c1] 
     c2dwarf = dframe_w_errors[c2] 
-    # c3dwarf = dwarfcat[c3] 
+    # # c3dwarf = dwarfcat[c3] 
     c = SkyCoord(x=c1dwarf,y=c2dwarf,z=D,unit='kpc',representation_type='cartesian')
 
     phi = c.spherical.lon.to(u.deg).value   # azimuth
@@ -420,44 +415,6 @@ def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgele
     phi_corr = c_offset.lon.to(u.deg).value
     theta_corr = c_offset.lat.to(u.deg).value
 
-    plt.figure(figsize=(10.5, 8))
-    plt.scatter((theta_corr),-(phi_corr), s=1, c=dwarfcat.age.values)
-    plt.colorbar(label=r'$log_{10} (age/yr)$')
-    plt.xlabel('Azimuthal angle [deg]')
-    plt.ylabel('Polar angle [deg]')
-    plt.title('Angular projection centered on mean position')
-    plt.axhline(0, color='gray', ls='--', lw=1)
-    plt.axvline(0, color='gray', ls='--', lw=1)
-    plt.xlim(-pdist,pdist)
-    plt.ylim(-pdist,pdist)
-
-    if save:
-        savepath = f"../plots/{plotdir}"
-        if not os.path.exists(savepath):
-            os.makedirs(savepath)
-        plt.savefig(f"{savepath}/{name}_{c1}{c2}_spherical_proj_{int(np.round(pdist*60,0))}.png", bbox_inches = 'tight')
-
-    if plot:
-        plt.show()
-    # elif not plot:
-    #     plt.close()
-        
-    # c1 and c2 are in DEGREES 
-    bgcat = Table.read(bgcatpath,format='fits')
-    c1bg = bgcat['c1']
-    c2bg = bgcat['c2']
-    # bgcoord = SkyCoord(bgcat['RA'],bgcat['DEC'],unit='deg',frame='icrs')
-    # c1bg,c2bg = spheres(bgcoord,c=SkyCoord(0,0,unit='deg',frame='icrs'),D=D)
-
-    bgtable = Table()
-    bgtable['c1'] = c1bg # distances on axes in units of degrees
-    bgtable['c2'] = c2bg
-    bgtable['gmag'] = bgcat['gmag']
-    bgtable['Ag'] = bgcat['Ag'] # no extinction for simulated stars - is this valid i think so 
-    bgtable['rmag'] = bgcat['rmag']
-    bgtable['Ar'] = bgcat['Ar']
-    bgtable['flag'] = 'bg'
-    bgtable['age'] = -99
 
     dwarftable = Table()
     dwarftable['c1'] = theta_corr # distances on axes in degrees
@@ -469,34 +426,10 @@ def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgele
     dwarftable['flag'] = 'dw'
     dwarftable['age'] = dwarfcat.age
 
-    table_final = vstack([dwarftable,bgtable])
 
-    # if center_cut and save:
-    #     r = float(input("Radius of cut (kpc)? "))
-    #     print('Masking center ... ')
-    #     posvec = np.array([table_final['c1'],table_final['c2']]).T
-    #     center_mask  = np.where(
-    #         (np.linalg.norm(posvec,axis=1) > r)
-    #         )[0]
-    #     table_cmask = table_final[center_mask]
-    #     print("Saving ... ")
-    #     table_cmask.write(f'../../matched_filter_testing/catalogs/{name}_formf_bg{int(edgelength)}kpc_cmask.fits',format='fits',overwrite=True)
-    
-    if plot:
-        plt.figure(figsize=(6,6))
-        plt.scatter(dwarftable['c1'], dwarftable['c2'],s=.1,alpha=0.5)
-        # if center_cut:
-        #     plt.scatter(table_cmask['c1'],table_cmask['c2'],s=0.1,alpha=0.03)
-        # else:
-        plt.scatter(table_final['c1'],table_final['c2'],s=0.1,alpha=0.03)
-        plt.show()
 
-    if save : # and not center_cut:
-        print("Saving ... ")
-        # ascii.write(table_final,f'../../matched_filter_testing/catalogs/{name}_formf_bg{int(edgelength)}deg.txt',overwrite=True)
-        table_final.write(my_save_path,format='fits',overwrite=True)
 
-    return table_final # delete this if doing in runner.py
+    return dwarftable # delete this if doing in runner.py
 
 # kde of RGB sources, observatioal style 
 # fix vmin max issue, colorbar, it looks like shit
