@@ -1,2 +1,2 @@
 # Mock-Observations-of-Dwarf-Mergers-at-Different-Angles
-Code repository of @dimitra-giantsidi and @nottele's summer 2026 research at Grinnell College on computational astrophysics under @CharlotteRuth .
+Dimitra Giantsidi (@dimitra-giantsidi) and Nolan Ottele (@nottele)'s summer 2026 research at Grinnell College on computational astrophysics under Professor Charlotte Christensen (@CharlotteRuth).
