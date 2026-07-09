@@ -168,7 +168,7 @@ def mk_norm_objcmd_gd(field, sourcefile, rmaglim = 26.0, plot=False):
     
     return stars
   
-def matched_filter_ani(galaxy_name, plotdir, field, catalog, signal_file, rmaglim=26.0, plot=False, \
+def matched_filter_ani(objcmd, backcmd, my_save_path, field, catalog, rmaglim=26.0, plot=False, \
                     RAkey = 'c1', DECkey = 'c2', gmagkey = 'gmag', \
                     # egmagkey = 'err_gmag', 
                     rmagkey = 'rmag', \
@@ -179,12 +179,7 @@ def matched_filter_ani(galaxy_name, plotdir, field, catalog, signal_file, rmagli
     pixelsize=pix#/60.0 #in arcmin
     # pixelsize = pixelsize # in kpc now
 
-    if plot:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim,plot=True)   
-        backcmd = mk_norm_backcmd(field, catalog,rmaglim=rmaglim,plot=True,pix=pix)
-    else:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim)
-        backcmd = mk_norm_backcmd(field, catalog, rmaglim=rmaglim,pix=pix)
+
 
     yo = (backcmd < 1.0e-7) #Bad indices?
     backcmd[yo] = numpy.mean(backcmd)/10.0
@@ -310,11 +305,6 @@ def matched_filter_ani(galaxy_name, plotdir, field, catalog, signal_file, rmagli
     sig_array = (smoothmap-median)/sigma
     sig_array = sig_array.T
     sig_array_under = numpy.flip(sig_array,axis=1)
-    
-    if not os.path.exists(plotdir):
-            os.makedirs(plotdir)
-
-    mapplot=plotdir+'mf_'+str(field)+'.png'
 
 
     plt.figure()
@@ -329,10 +319,8 @@ def matched_filter_ani(galaxy_name, plotdir, field, catalog, signal_file, rmagli
 
 
     hdu = fits.PrimaryHDU(sig_array)
-    hdu.header['SRC_ID'] = galaxy_name
-    hdu.writeto(f'/home/otteleno/MAP/matched_filter_plots/{galaxy_name}_data.fits', overwrite=True)
+    hdu.header['SRC_ID'] = my_save_path
+    hdu.writeto(my_save_path, overwrite=True)
     
     plt.show()
-    plt.savefig(mapplot, bbox_inches = 'tight')
     plt.close()
-
