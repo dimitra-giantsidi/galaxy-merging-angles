@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from astropy.convolution import Gaussian2DKernel, convolve
 # from astropy.io import fits
 from astropy.table import Table
+from astropy.io import fits
 from astropy import stats
 
 def get_xposvector(xarcmin_min, xarcmin_max, pixsize):
@@ -167,7 +168,7 @@ def mk_norm_objcmd_gd(field, sourcefile, rmaglim = 26.0, plot=False):
     
     return stars
   
-def matched_filter_ani(plotdir, field, catalog, signal_file, rmaglim=26.0, plot=False, \
+def matched_filter_ani(objcmd, backcmd, my_save_path, field, catalog, rmaglim=26.0, plot=False, \
                     RAkey = 'c1', DECkey = 'c2', gmagkey = 'gmag', \
                     # egmagkey = 'err_gmag', 
                     rmagkey = 'rmag', \
@@ -178,12 +179,7 @@ def matched_filter_ani(plotdir, field, catalog, signal_file, rmaglim=26.0, plot=
     pixelsize=pix#/60.0 #in arcmin
     # pixelsize = pixelsize # in kpc now
 
-    if plot:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim,plot=True)   
-        backcmd = mk_norm_backcmd(field, catalog,rmaglim=rmaglim,plot=True,pix=pix)
-    else:
-        objcmd = mk_norm_objcmd_gd(field, signal_file, rmaglim=rmaglim)
-        backcmd = mk_norm_backcmd(field, catalog, rmaglim=rmaglim,pix=pix)
+
 
     yo = (backcmd < 1.0e-7) #Bad indices?
     backcmd[yo] = numpy.mean(backcmd)/10.0
@@ -283,6 +279,7 @@ def matched_filter_ani(plotdir, field, catalog, signal_file, rmaglim=26.0, plot=
 
     mean_nosm, median_nosm, sigma_nosm = stats.sigma_clipped_stats(smoothmap, sigma=2, maxiters=4)
     clipped_data = stats.sigma_clip(smoothmap, sigma=2, maxiters=4)
+    
     if plot:
         plt.figure()
         plt.hist(numpy.ravel(clipped_data[clipped_data.mask]), label = 'Object')
@@ -296,6 +293,7 @@ def matched_filter_ani(plotdir, field, catalog, signal_file, rmaglim=26.0, plot=
     # plt.savefig('../plots/storm_4096_3/' + field + '_background_object.png', bbox_inches='tight')
     # plt.close()
 
+    
     print('Sigma in smoothed stellar counts ' + str(sigma))
     print('Mean in smoothed stellar counts ' + str(mean))
 
@@ -307,22 +305,22 @@ def matched_filter_ani(plotdir, field, catalog, signal_file, rmaglim=26.0, plot=
     sig_array = (smoothmap-median)/sigma
     sig_array = sig_array.T
     sig_array_under = numpy.flip(sig_array,axis=1)
-    
-    if not os.path.exists(plotdir):
-            os.makedirs(plotdir)
 
-    mapplot=plotdir+'mf_'+str(field)+'.png'
 
     plt.figure()
     plt.imshow(sig_array[::-1, :], extent=[xrange[0], xrange[1],  yrange[0], yrange[1]], \
             cmap = 'gray_r', vmin = -15, vmax = 30)
-    plt.contour(xvec_pos, yvec_pos, sig_array, levels=levels)
+    # plt.contour(xvec_pos, yvec_pos, sig_array, levels=levels)
     # plt.gca().invert_xaxis()
     plt.xlabel(r'$\Delta$x (arcmin)')
     plt.ylabel(r'$\Delta$y (arcmin)')
     # plt.xlim(-pdist,pdist)
     # plt.ylim(-pdist,pdist)
-    plt.show()
-    plt.savefig(mapplot, bbox_inches = 'tight')
-    plt.close()
 
+
+    hdu = fits.PrimaryHDU(sig_array)
+    hdu.header['SRC_ID'] = my_save_path
+    hdu.writeto(my_save_path, overwrite=True)
+    
+    plt.show()
+    plt.close()

@@ -1,0 +1,5 @@
+Storm 2 command:
+python mto2.py galaxy_data.fits --move_factor 1 --s_sigma 0 --skip_reduction
+
+Rogue 5 command:
+python mto2.py galaxy_data.fits --move_factor 3.5 --s_sigma 0 --area_ratio .95

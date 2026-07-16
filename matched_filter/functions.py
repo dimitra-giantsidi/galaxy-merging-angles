@@ -63,7 +63,7 @@ def err_file_gen(df,name,magkey,errkey,ret=False):
     mag_err_table[bin2] = bins[1:]
     mag_err_table['err'] = err_per_bin
 
-    dir = f"../../data/matched-filter/iso_lf_signals/{name}_errcomp/"
+    dir = f"../../matched_filter_testing/iso_lf_signals/{name}_errcomp/"
     if not os.path.exists(dir):
         os.makedirs(dir)
 
@@ -86,7 +86,7 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
     """
     # amke sure path has proper box
     # path = f"/Users/f0080bw/Desktop/scialog/ananke_testing/{box}_catalogs_plots/" + name + "/survey." + name + ".0.h5"# for local 
-    path = f"../../data/raw/{box}_{num}a/survey.{name}.0.h5"
+    path = f"/home/otteleno/MAP/matched_filter_starters/{box}_{num}_data/survey.{name}.0.h5"
     vframe = vaex.open(path)
     dframe = pd.DataFrame(vframe,columns=vframe.column_names)
     errModel = LsstErrorModel(nYrObs=year)
@@ -98,13 +98,13 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
     err_file_gen(dframe_w_errors,name=name,magkey='lsst_r',errkey='lsst_r_err')
 
     # PARSEC:
-    iso = ascii.read(f"../../data/matched-filter/signals/parsec_{age}{mh}_iso.txt")
+    iso = ascii.read(f"home/otteleno/MAP/matched_filter_starters/parsec_{age}{mh}_iso.txt")
     order = np.argsort(iso['rmag'])
     mag2 = iso['rmag'][order]
     mag1 = iso['gmag'][order]
 
     # PARSEC:
-    lf = ascii.read(f"../../data/matched-filter/iso_lf_signals/iso_lf/parsec_{age}{mh}_lf.txt")
+    lf = ascii.read(f"../iso_lf_signals/iso_lf/parsec_{age}{mh}_lf.txt")
     mag2_bins = lf['magbinc']
     mag2_counts = lf['rmag'] * 1e7 # can pick any mass here - signal CMD is a density, so this will populate the whole isochrone with no low number stats issues
 
@@ -164,7 +164,7 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
     dmod = 5*np.log10(D) - 5 # D in parsec!!! - kpc in filename
     tab = Table([syn_stars_mag1 - syn_stars_mag2, syn_stars_mag2 + dmod],names=('grcol','rmag')) # change these depending on mags used 
 
-    ascii.write(tab,f'../../data/matched-filter/iso_lf_signals/signal_files/parsec_{int(D/1000)}_{age}{mh}_signal_cmd_gr.txt',overwrite=True)
+    ascii.write(tab,f'../iso_lf_signals/signal_files/parsec_{int(D/1000)}_{age}{mh}_signal_cmd_gr.txt',overwrite=True)
 
     if plot: 
         plt.figure(figsize=(6, 8))
@@ -353,7 +353,7 @@ def bg_gen(bgpaths,mlim,D,binsize=0.01,edgelength=5,plot=True,save=True):
 
     # writing bg field - use later in combo function
     if save:
-        outstr = f'../../data/matched-filter/bgcats/bgr{mlim}g{mlim}_for_mf_{int(edgelength)}deg.fits' 
+        outstr = f'../../matched_filter_testing/bgcats/bgr{mlim}g{mlim}_for_mf_{int(edgelength)}deg.fits' 
         bg_for_mf.write(outstr,format='fits',overwrite=True)
         # ascii.write(bg_for_mf,outstr,overwrite=True) # bg, maglim, for mf, length of field
         return outstr
@@ -390,24 +390,19 @@ def plot_size(box,num,D):
     return pdist # in degrees
 
 # combines mock obs from anake with bg field of choice 
-def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgelength=5,plot=True,save=True):
+def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgelength=5,plot=True,save=True, my_save_path=None):
     vdwarfcat = vaex.open(dwarfcatpath)
     dwarfcat = pd.DataFrame(vdwarfcat,columns=vdwarfcat.column_names)
     
-    # adding errors to magnitudes - see how the cmd smears out at the dim magnitudes?
+    # # adding errors to magnitudes - see how the cmd smears out at the dim magnitudes?
     errModel = LsstErrorModel(nYrObs=year)
     errModel = LsstErrorModel(renameDict={ "u": "lsst_u", "g": "lsst_g", "r": "lsst_r", "i": "lsst_i", "z": "lsst_z", "y": "lsst_y"}) 
-    dframe_w_errors = errModel(dwarfcat, random_state=42)
+    dframe_w_errors = errModel(dwarfcat)
 
-    fig = plt.figure(figsize=(6,8))
-    plt.scatter(dframe_w_errors.lsst_g - dframe_w_errors.lsst_r, dframe_w_errors.lsst_r,alpha=1,s=0.1,c=dframe_w_errors.age)
-    plt.gca().invert_yaxis()
-    plt.show()
-
-    # these are xyz positions relative to observer
+    # # these are xyz positions relative to observer
     c1dwarf = dframe_w_errors[c1] 
     c2dwarf = dframe_w_errors[c2] 
-    # c3dwarf = dwarfcat[c3] 
+    # # c3dwarf = dwarfcat[c3] 
     c = SkyCoord(x=c1dwarf,y=c2dwarf,z=D,unit='kpc',representation_type='cartesian')
 
     phi = c.spherical.lon.to(u.deg).value   # azimuth
@@ -420,44 +415,6 @@ def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgele
     phi_corr = c_offset.lon.to(u.deg).value
     theta_corr = c_offset.lat.to(u.deg).value
 
-    plt.figure(figsize=(10.5, 8))
-    plt.scatter((theta_corr),-(phi_corr), s=1, c=dwarfcat.age.values)
-    plt.colorbar(label=r'$log_{10} (age/yr)$')
-    plt.xlabel('Azimuthal angle [deg]')
-    plt.ylabel('Polar angle [deg]')
-    plt.title('Angular projection centered on mean position')
-    plt.axhline(0, color='gray', ls='--', lw=1)
-    plt.axvline(0, color='gray', ls='--', lw=1)
-    plt.xlim(-pdist,pdist)
-    plt.ylim(-pdist,pdist)
-
-    if save:
-        savepath = f"../../data/plots/{plotdir}"
-        if not os.path.exists(savepath):
-            os.makedirs(savepath)
-        plt.savefig(f"{savepath}/{name}_{c1}{c2}_spherical_proj_{int(np.round(pdist*60,0))}.png", bbox_inches = 'tight')
-
-    if plot:
-        plt.show()
-    elif not plot:
-        plt.close()
-        
-    # c1 and c2 are in DEGREES 
-    bgcat = Table.read(bgcatpath,format='fits')
-    c1bg = bgcat['c1']
-    c2bg = bgcat['c2']
-    # bgcoord = SkyCoord(bgcat['RA'],bgcat['DEC'],unit='deg',frame='icrs')
-    # c1bg,c2bg = spheres(bgcoord,c=SkyCoord(0,0,unit='deg',frame='icrs'),D=D)
-
-    bgtable = Table()
-    bgtable['c1'] = c1bg # distances on axes in units of degrees
-    bgtable['c2'] = c2bg
-    bgtable['gmag'] = bgcat['gmag']
-    bgtable['Ag'] = bgcat['Ag'] # no extinction for simulated stars - is this valid i think so 
-    bgtable['rmag'] = bgcat['rmag']
-    bgtable['Ar'] = bgcat['Ar']
-    bgtable['flag'] = 'bg'
-    bgtable['age'] = -99
 
     dwarftable = Table()
     dwarftable['c1'] = theta_corr # distances on axes in degrees
@@ -469,34 +426,10 @@ def bg_dwarf_combo(pdist,name,year,D,c1,c2,plotdir,dwarfcatpath,bgcatpath,edgele
     dwarftable['flag'] = 'dw'
     dwarftable['age'] = dwarfcat.age
 
-    table_final = vstack([dwarftable,bgtable])
 
-    # if center_cut and save:
-    #     r = float(input("Radius of cut (kpc)? "))
-    #     print('Masking center ... ')
-    #     posvec = np.array([table_final['c1'],table_final['c2']]).T
-    #     center_mask  = np.where(
-    #         (np.linalg.norm(posvec,axis=1) > r)
-    #         )[0]
-    #     table_cmask = table_final[center_mask]
-    #     print("Saving ... ")
-    #     table_cmask.write(f'../../matched_filter_testing/catalogs/{name}_formf_bg{int(edgelength)}kpc_cmask.fits',format='fits',overwrite=True)
-    
-    # if plot:
-    #     plt.figure(figsize=(6,6))
-    #     plt.scatter(dwarftable['c1'], dwarftable['c2'],s=.1,alpha=0.5)
-    #     # if center_cut:
-    #     #     plt.scatter(table_cmask['c1'],table_cmask['c2'],s=0.1,alpha=0.03)
-    #     # else:
-    #     plt.scatter(table_final['c1'],table_final['c2'],s=0.1,alpha=0.03)
-    #     plt.show()
 
-    if save : # and not center_cut:
-        print("Saving ... ")
-        # ascii.write(table_final,f'../../matched_filter_testing/catalogs/{name}_formf_bg{int(edgelength)}deg.txt',overwrite=True)
-        table_final.write(f'../../data/matched-filter/catalogs/{name}_{c1}{c2}_formf_bg{int(edgelength)}deg.fits',format='fits',overwrite=True)
 
-    return table_final # delete this if doing in runner.py
+    return dwarftable # delete this if doing in runner.py
 
 # kde of RGB sources, observatioal style 
 # fix vmin max issue, colorbar, it looks like shit
@@ -549,7 +482,7 @@ def plot_source_map(name,mlim,D,c1,c2,path,pdist,plotdir,pix,kernel=0.7): # kern
     # ax.set_ylim(-pdist,pdist)
     
 
-    savepath = f"../../data/plots/{plotdir}"
+    savepath = f"../plots/{plotdir}"
     if not os.path.exists(savepath):
         os.makedirs(savepath)
     plt.savefig(f"{savepath}/{name}_{c1}{c2}_sourceKDE_rgb_{int(np.round(pdist,0))}.png", bbox_inches = 'tight')

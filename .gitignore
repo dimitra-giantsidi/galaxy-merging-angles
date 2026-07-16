@@ -1,2 +1,5 @@
-/raw_data
-/matched_filter/mf_data
+/coordinates_and_rotation/movies/
+/matched_filter/mf_data/
+/raw_data/
+/stream_analysis/stfit_outputs/
+/substructure_detection/sd_outputs/
