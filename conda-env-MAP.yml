@@ -1,0 +1,22 @@
+name: conda-env-MAP
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas
+  - vaex
+  - scipy
+  - python=3.10
+  - cython
+  - matplotlib
+  - numpy
+  - h5py
+  - jupyter
+  - notebook
+  - tqdm
+  - gnuastro
+  - higra
+  - typer
+  - opencv
+  - photutils
+prefix: /home/giantsid/.conda/envs/conda-env-MAP
