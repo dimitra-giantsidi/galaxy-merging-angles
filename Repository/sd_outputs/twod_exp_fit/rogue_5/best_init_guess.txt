@@ -1,1 +1,0 @@
-Best initial guess for rogue_5: 1100, 1.05, 1, 5, 0.2, -1.3, 0.1.
