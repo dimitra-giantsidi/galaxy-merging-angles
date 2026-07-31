@@ -1,9 +1,9 @@
 #!/bin/bash
 
-box="storm"
-num="2"
+box="rogue"
+num="5"
 numpix="8000"
-threshold=1.2
+threshold=0.8
 
 echo "Applying Segment"
 sd_path="/Users/dimitragiantsidi/Desktop/MAP_all/MAP/substructure_detection/sd_outputs"
