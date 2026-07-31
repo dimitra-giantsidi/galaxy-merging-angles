@@ -3,10 +3,10 @@
 box="storm"
 num="2"
 numpix="8000"
-threshold=3
+threshold=1.2
 
 echo "Applying Segment"
-sd_path="/substructure_detection/sd_outputs"
+sd_path="/Users/dimitragiantsidi/Desktop/MAP_all/MAP/substructure_detection/sd_outputs"
 twod_exp_fits_path="$sd_path""/twod_exp_fit"
 seg_path="$sd_path""/Segment"
 mkdir -p "$seg_path"
@@ -19,7 +19,11 @@ mkdir -p "$segmented_path"
 for file in "$twod_exp_fits_path"/"$box"_"$num"/fits_files/*; do
     if [ -f "$file" ]; then
         echo $(basename "$file")
-        readarray -t numbers < <(echo $(basename "$file") | grep -E -o '[0-9]+(\.[0-9]+)?')
+        numbers=()
+        while IFS= read -r line; do
+            numbers+=("$line")
+        done < <(echo $(basename "$file") | grep -E -o '[0-9]+(\.[0-9]+)?')
+        # readarray -t numbers < <(echo $(basename "$file") | grep -E -o '[0-9]+(\.[0-9]+)?')
 
         angles=("${numbers[@]:1:${#numbers[@]}-2}")
         dec=${angles[0]}
@@ -35,30 +39,30 @@ echo "$box""_$num"" Segment parameters: clumpsnthresh = $threshold" > "$galaxy_p
 
 echo "Segment finished (this doesn't guarantee it worked)."
 
-echo "Applying stream fitting"
-stream_fitting="/home/giantsid/MAP/stream_analysis/stream_fitting.ipynb"
+    # echo "Applying stream fitting"
+    # stream_fitting="/home/giantsid/MAP/stream_analysis/stream_fitting.ipynb"
 
-papermill "$stream_fitting" "$stream_fitting"
+    # papermill "$stream_fitting" "$stream_fitting"
 
-if [ $? -eq 0 ]; then
-    echo "Success on applying stream fitting!"
-else
-    echo "Failure on applying stream fitting."
-    exit 1
-fi
+    # if [ $? -eq 0 ]; then
+    #     echo "Success on applying stream fitting!"
+    # else
+    #     echo "Failure on applying stream fitting."
+    #     exit 1
+    # fi
 
-echo "Opening visualizer"
-visualizer="/home/giantsid/MAP/code/visualizer.ipynb"
+    # echo "Opening visualizer"
+    # visualizer="/home/giantsid/MAP/code/visualizer.ipynb"
 
-papermill "$visualizer" "$visualizer"
+    # papermill "$visualizer" "$visualizer"
 
-if [ $? -eq 0 ]; then
-    echo "Success on opening visualizer!"
-else
-    echo "Failure on opening visualizer."
-    exit 1
-fi
+    # if [ $? -eq 0 ]; then
+    #     echo "Success on opening visualizer!"
+    # else
+    #     echo "Failure on opening visualizer."
+    #     exit 1
+    # fi
 
-jupyter notebook "$visualizer"
+    # jupyter notebook "$visualizer"
 
 echo "All done!"
