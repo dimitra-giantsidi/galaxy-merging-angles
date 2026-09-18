@@ -15,4 +15,8 @@
 /substructure_detection/.ipynb_checkpoints/
 /substructure_detection/.DS_Store
 /.ipynb_checkpoints/
-/.DS_Store
+/.DS_Store/
+/combo_detections/raw_data/
+/combo_detections/.DS_Store/
+/combo_detections/.ipynb_checkpoints/
+/combo_detections/rotated_catalogs
