@@ -76,7 +76,7 @@ def err_file_gen(df,name,magkey,errkey,ret=False):
         return
 
 # generates signal files from isochrones, lf, error
-def signal_gen(name, num, box, age, mh, D, year, plot=True):
+def signal_gen(name, box, age, mh, D, year, plot=True):
     """
     Generates a signal file with lsst errors for mock observed ananke star particles
     name: data table name, used for reading / writing 
@@ -86,19 +86,21 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
     """
     # amke sure path has proper box
     # path = f"/Users/f0080bw/Desktop/scialog/ananke_testing/{box}_catalogs_plots/" + name + "/survey." + name + ".0.h5"# for local 
-    path = f"/home/otteleno/MAP/matched_filter_starters/{box}_{num}_data/survey.{name}.0.h5"
+    path = f"/home/bvelguth/scialog/ananke_testing/{box}_catalogs_plots/{name}/survey.{name}.0.h5"
     vframe = vaex.open(path)
     dframe = pd.DataFrame(vframe,columns=vframe.column_names)
     errModel = LsstErrorModel(nYrObs=year)
     errModel = LsstErrorModel(renameDict={ "u": "lsst_u", "g": "lsst_g", "r": "lsst_r", "i": "lsst_i", "z": "lsst_z", "y": "lsst_y"}) 
     dframe_w_errors = errModel(dframe)
 
+    dmod = 5*np.log10(D) - 5 # D in parsec!!! - kpc in filename
+
     # doing g and r since those are the bg data we have for now
     err_file_gen(dframe_w_errors,name=name,magkey='lsst_g',errkey='lsst_g_err')
     err_file_gen(dframe_w_errors,name=name,magkey='lsst_r',errkey='lsst_r_err')
 
     # PARSEC:
-    iso = ascii.read(f"home/otteleno/MAP/matched_filter_starters/parsec_{age}{mh}_iso.txt")
+    iso = ascii.read(f"../iso_lf_signals/iso_lf/parsec_{age}{mh}_iso.txt")
     order = np.argsort(iso['rmag'])
     mag2 = iso['rmag'][order]
     mag1 = iso['gmag'][order]
@@ -141,15 +143,18 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
         if num == 0:
             continue
 
-        mag2_samples = np.random.uniform(bin - bin_size/2, bin + bin_size/2, size=num)
+        mag2_samples = np.random.uniform(bin - bin_size/2, bin + bin_size/2, size=10*num)
         
         # Interpolate mag1 from isochrone
         mag1_samples = np.interp(mag2_samples, mag2, mag1)
 
+        keep = (mag2_samples + dmod < 26.) & (mag1_samples + dmod < 26.)
+        mag2_samples, mag1_samples = mag2_samples[keep], mag1_samples[keep]
+
         # Apply photometric errors to synthetic stars taken from lf + isochrone
         # errors for each from lambda functions 
-        r_errs = r_err_interp(mag2_samples)
-        g_errs = g_err_interp(mag1_samples)
+        r_errs = r_err_interp(mag2_samples + dmod)
+        g_errs = g_err_interp(mag1_samples + dmod)
 
         #shifting them by an ammount given by the error per bin
         mag1_samples += np.random.normal(0, g_errs)
@@ -161,13 +166,14 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
     syn_stars_mag1 = np.array(syn_stars_mag1)
     syn_stars_mag2 = np.array(syn_stars_mag2)
 
-    dmod = 5*np.log10(D) - 5 # D in parsec!!! - kpc in filename
+    
     tab = Table([syn_stars_mag1 - syn_stars_mag2, syn_stars_mag2 + dmod],names=('grcol','rmag')) # change these depending on mags used 
 
     ascii.write(tab,f'../iso_lf_signals/signal_files/parsec_{int(D/1000)}_{age}{mh}_signal_cmd_gr.txt',overwrite=True)
 
     if plot: 
-        plt.figure(figsize=(6, 8))
+        fig = plt.figure(figsize=(6, 8))
+        ax = plt.gca()
         # Plot input isochrone
         # plt.plot(
         #     mag1 - mag2,
@@ -176,20 +182,22 @@ def signal_gen(name, num, box, age, mh, D, year, plot=True):
         # )
 
         # Plot synthetic stars that ahve been shifted
-        plt.scatter(
+        ax.scatter(
             syn_stars_mag1 - syn_stars_mag2,
             syn_stars_mag2 + dmod,
             s=10, c="black", alpha=1, label="Synthetic stars"
         )
 
-        plt.gca().invert_yaxis()
-        plt.ylim(27,21)
-        plt.xlabel("g - r (mag)")
-        plt.ylabel("r (mag)")
-        plt.title("Synthetic CMD with Photometric Errors")
+        ax.invert_yaxis()
+        ax.set_ylim(27,21)
+        ax.set_xlabel("g - r (mag)")
+        ax.set_ylabel("r (mag)")
+        ax.set_title("Synthetic CMD with Photometric Errors")
         plt.legend()
         plt.tight_layout()
-        # plt.show()
+        # clicks = clicker(ax,['clicks'],markers=['x'])
+        plt.show()
+        # print(clicks.get_positions())
         # plt.savefig("/home/bvelguth/scialog/matched_filter_testing/plots/cmd.png")
     return
 
