@@ -15,9 +15,5 @@
 /substructure_detection/.ipynb_checkpoints/
 /substructure_detection/.DS_Store
 /.ipynb_checkpoints/
-<<<<<<< HEAD
-.DS_Store/
-=======
 /.DS_Store/
 /scialog_data/
->>>>>>> eff1798 (update .gitignore)
