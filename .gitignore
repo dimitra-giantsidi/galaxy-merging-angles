@@ -8,6 +8,7 @@
 /matched_filter/mf_data/
 /raw_data/
 /stream_analysis/stfit_outputs/
+/stream_analysis/mf_npz_catalogs/
 /substructure_detection/sd_outputs/
 /substructure_detection/mf_npz_catalogs/
 /scialog_data/
