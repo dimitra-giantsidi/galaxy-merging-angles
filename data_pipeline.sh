@@ -1,12 +1,12 @@
 #!/bin/bash
 
-box="rogue"
-num="5"
+box="storm"
+num="2"
 numpix="8000"
-threshold=0.8
+threshold=1.2
 
 echo "Applying Segment"
-sd_path="/Users/dimitragiantsidi/Desktop/MAP_all/MAP/substructure_detection/sd_outputs"
+sd_path="/home/giantsid/MAP/substructure_detection/sd_outputs"
 twod_exp_fits_path="$sd_path""/twod_exp_fit"
 seg_path="$sd_path""/Segment"
 mkdir -p "$seg_path"
